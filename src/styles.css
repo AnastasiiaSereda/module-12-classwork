@@ -1,6 +1,9 @@
 .form-panel {
-    width: 400px;
-    height: 800px;
-    display: flex;
-    flex-direction: column;
-  }
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.swiper-wrapper {
+  min-height: 400px;
+}

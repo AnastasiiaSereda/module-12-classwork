@@ -1,12 +1,19 @@
 import './styles.css';
+import 'swiper/css/swiper.min.css';
+import Swiper from 'swiper';
+import imageList from './template/template.hbs';
+
+const apiUrl = 'https://venify.herokuapp.com';
 
 const refs = {
   form: document.querySelector('.form-panel'),
   userName: document.querySelector('#userName'),
   password: document.querySelector('#password'),
   button: document.querySelector('#buttonLogin'),
+  imagesList: document.querySelector('.swiper-wrapper'),
 };
-const submitData = function(e) {
+
+const submitData = async function(e) {
   e.preventDefault();
   const userName = refs.userName.value;
   const password = refs.password.value;
@@ -15,12 +22,14 @@ const submitData = function(e) {
     login: userName,
     password: password,
   };
-  postData('https://venify.herokuapp.com/user/login', userData)
-    .then(response => console.log(response))
-    .catch(error => console.error(error));
-  
+  // переписать на async await
+  try {
+    const { token } = await postData(`${apiUrl}/user/login`, userData);
+    return getMatchedList(token);
+  } catch (error) {
+    console.log(error);
+  }
 };
-
 
 refs.form.addEventListener('submit', submitData);
 
@@ -33,4 +42,26 @@ function postData(url, data = {}) {
     referrer: 'no-referrer',
     body: JSON.stringify(data),
   }).then(response => response.json());
+}
+
+function getMatchedList(token) {
+  return fetch(`${apiUrl}/user/mathchedList`, {
+    headers: {
+      authorization: token,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      const images = data.map(({ image_list }) => image_list[0]);
+      refs.imagesList.insertAdjacentHTML('beforeend', imageList(images));
+
+      new Swiper('.swiper-container', {
+        speed: 400,
+        spaceBetween: 100,
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+      });
+    });
 }
