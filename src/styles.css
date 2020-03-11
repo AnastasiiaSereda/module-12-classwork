@@ -5,5 +5,11 @@
 }
 
 .swiper-wrapper {
-  min-height: 400px;
+  min-height: 600px;
+}
+
+
+.swiper-container {
+  max-width: 900px;
+  
 }
